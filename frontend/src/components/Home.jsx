@@ -1,181 +1,181 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-function Home() {
-  const [todos, setTodos] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [newTodo, setNewTodo] = useState("");
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import toast from "react-hot-toast";
+// import { useNavigate } from "react-router-dom";
+// function Home() {
+//   const [todos, setTodos] = useState([]);
+//   const [error, setError] = useState(null);
+//   const [loading, setLoading] = useState(false);
+//   const [newTodo, setNewTodo] = useState("");
 
-  useEffect(() => {
-    const fetchtodos = async () => {
-      try {
-        setLoading(true);
-        // https://backend-only-6264.onrender.com
-        // const response = await axios.get("http://localhost:4001/todo/fetch", {
-        const response = await axios.get("https://backend-only-6264.onrender.com/todo/fetch", {
+//   useEffect(() => {
+//     const fetchtodos = async () => {
+//       try {
+//         setLoading(true);
+//         // https://backend-only-6264.onrender.com
+//         // const response = await axios.get("http://localhost:4001/todo/fetch", {
+//         const response = await axios.get("https://backend-only-6264.onrender.com/todo/fetch", {
 
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        console.log(response.data.todos);
-        setTodos(response.data.todos);
-        setError(null);
-      } catch (error) {
-        setError("Failed to fetch todos");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchtodos();
-  }, []);
+//           withCredentials: true,
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//         });
+//         console.log(response.data.todos);
+//         setTodos(response.data.todos);
+//         setError(null);
+//       } catch (error) {
+//         setError("Failed to fetch todos");
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+//     fetchtodos();
+//   }, []);
 
-  const todoCreate = async () => {
-    if (!newTodo) return;
-    try {
-      const response = await axios.post(
-        "https://backend-only-6264.onrender.com/todo/create",
-        {
-          text: newTodo,
-          completed: false,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(response.data.newTodo);
-      setTodos([...todos, response.data.newTodo]);
-      setNewTodo("");
-    } catch (error) {
-      setError("Failed to create todo");
-    }
-  };
+//   const todoCreate = async () => {
+//     if (!newTodo) return;
+//     try {
+//       const response = await axios.post(
+//         "https://backend-only-6264.onrender.com/todo/create",
+//         {
+//           text: newTodo,
+//           completed: false,
+//         },
+//         {
+//           withCredentials: true,
+//         }
+//       );
+//       console.log(response.data.newTodo);
+//       setTodos([...todos, response.data.newTodo]);
+//       setNewTodo("");
+//     } catch (error) {
+//       setError("Failed to create todo");
+//     }
+//   };
 
-  const todoStatus = async (id) => {
-    const todo = todos.find((t) => t._id === id);
-    try {
-      const response = await axios.put(
-        `https://backend-only-6264.onrender.com/todo/update/${id}`,
-        {
-          ...todo,
-          completed: !todo.completed,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(response.data.todo);
-      setTodos(todos.map((t) => (t._id === id ? response.data.todo : t)));
-    } catch (error) {
-      setError("Failed to find todo status");
-    }
-  };
+//   const todoStatus = async (id) => {
+//     const todo = todos.find((t) => t._id === id);
+//     try {
+//       const response = await axios.put(
+//         `https://backend-only-6264.onrender.com/todo/update/${id}`,
+//         {
+//           ...todo,
+//           completed: !todo.completed,
+//         },
+//         {
+//           withCredentials: true,
+//         }
+//       );
+//       console.log(response.data.todo);
+//       setTodos(todos.map((t) => (t._id === id ? response.data.todo : t)));
+//     } catch (error) {
+//       setError("Failed to find todo status");
+//     }
+//   };
 
-  const todoDelete = async (id) => {
-    try {
-      await axios.delete(`https://backend-only-6264.onrender.com/todo/delete/${id}`, {
-        withCredentials: true,
-      });
-      setTodos(todos.filter((t) => t._id !== id));
-    } catch (error) {
-      setError("Failed to Delete Todo");
-    }
-  };
+//   const todoDelete = async (id) => {
+//     try {
+//       await axios.delete(`https://backend-only-6264.onrender.com/todo/delete/${id}`, {
+//         withCredentials: true,
+//       });
+//       setTodos(todos.filter((t) => t._id !== id));
+//     } catch (error) {
+//       setError("Failed to Delete Todo");
+//     }
+//   };
 
-  const navigateTo = useNavigate();
-  const logout = async () => {
-    try {
-      // await axios.get("https://backend-only-6264.onrender.com/user/logout", { // roiginal
-      await axios.get("http://localhost:4001/user/logout", {
-        withCredentials: true,
-      });
-      toast.success("User logged out successfully");
-      navigateTo("/login");
-      localStorage.removeItem("jwt");
-    } catch (error) {
-      toast.error("Error logging out");
-    }
-  };
+//   const navigateTo = useNavigate();
+//   const logout = async () => {
+//     try {
+//       // await axios.get("https://backend-only-6264.onrender.com/user/logout", { // roiginal
+//       await axios.get("http://localhost:4001/user/logout", {
+//         withCredentials: true,
+//       });
+//       toast.success("User logged out successfully");
+//       navigateTo("/login");
+//       localStorage.removeItem("jwt");
+//     } catch (error) {
+//       toast.error("Error logging out");
+//     }
+//   };
 
-  const remainingTodos = todos.filter((todo) => !todo.completed).length;
+//   const remainingTodos = todos.filter((todo) => !todo.completed).length;
 
-  return (
-    <div className=" my-10 bg-gray-100 max-w-lg lg:max-w-xl rounded-lg shadow-lg mx-8 sm:mx-auto p-6">
-      <h1 className="text-2xl font-semibold text-center">Todo App</h1>
-      <div className="flex mb-4">
-        <input
-          type="text"
-          placeholder="Add a new todo"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && todoCreate()}
-          className="flex-grow p-2 border rounded-l-md focus:outline-none"
-        />
-        <button
-          onClick={todoCreate}
-          className="bg-blue-600 border rounded-r-md text-white px-4 py-2 hover:bg-blue-900 duration-300"
-        >
-          Add
-        </button>
-      </div>
-      {loading ? (
-        <div className="text-center justify-center">
-          <span className="textgray-500">Loading...</span>
-        </div>
-      ) : error ? (
-        <div className="text-center text-red-600 font-semibold">{error}</div>
-      ) : (
-        <ul className="space-y-2">
-          {todos.map((todo, index) => (
-            <li
-              key={todo._id || index}
-              className="flex items-center justify-between p-3 bg-gray-100 rounded-md"
-            >
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={todo.completed}
-                  onChange={() => todoStatus(todo._id)}
-                  className="mr-2"
-                />
-                <span
-                  className={`${
-                    todo.completed
-                      ? "line-through text-gray-800 font-semibold"
-                      : ""
-                  } `}
-                >
-                  {todo.text}
-                </span>
-              </div>
-              <button
-                onClick={() => todoDelete(todo._id)}
-                className="text-red-500 hover:text-red-800 duration-300"
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+//   return (
+//     <div className=" my-10 bg-gray-100 max-w-lg lg:max-w-xl rounded-lg shadow-lg mx-8 sm:mx-auto p-6">
+//       <h1 className="text-2xl font-semibold text-center">Todo App</h1>
+//       <div className="flex mb-4">
+//         <input
+//           type="text"
+//           placeholder="Add a new todo"
+//           value={newTodo}
+//           onChange={(e) => setNewTodo(e.target.value)}
+//           onKeyPress={(e) => e.key === "Enter" && todoCreate()}
+//           className="flex-grow p-2 border rounded-l-md focus:outline-none"
+//         />
+//         <button
+//           onClick={todoCreate}
+//           className="bg-blue-600 border rounded-r-md text-white px-4 py-2 hover:bg-blue-900 duration-300"
+//         >
+//           Add
+//         </button>
+//       </div>
+//       {loading ? (
+//         <div className="text-center justify-center">
+//           <span className="textgray-500">Loading...</span>
+//         </div>
+//       ) : error ? (
+//         <div className="text-center text-red-600 font-semibold">{error}</div>
+//       ) : (
+//         <ul className="space-y-2">
+//           {todos.map((todo, index) => (
+//             <li
+//               key={todo._id || index}
+//               className="flex items-center justify-between p-3 bg-gray-100 rounded-md"
+//             >
+//               <div className="flex items-center">
+//                 <input
+//                   type="checkbox"
+//                   checked={todo.completed}
+//                   onChange={() => todoStatus(todo._id)}
+//                   className="mr-2"
+//                 />
+//                 <span
+//                   className={`${
+//                     todo.completed
+//                       ? "line-through text-gray-800 font-semibold"
+//                       : ""
+//                   } `}
+//                 >
+//                   {todo.text}
+//                 </span>
+//               </div>
+//               <button
+//                 onClick={() => todoDelete(todo._id)}
+//                 className="text-red-500 hover:text-red-800 duration-300"
+//               >
+//                 Delete
+//               </button>
+//             </li>
+//           ))}
+//         </ul>
+//       )}
 
-      <p className="mt-4 text-center text-sm text-gray-700">
-        {remainingTodos} remaining todos
-      </p>
-      <button
-        onClick={() => logout()}
-        className="mt-6 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-800 duration-500 mx-auto block"
-      >
-        Logout
-      </button>
-    </div>
-  );
-}
+//       <p className="mt-4 text-center text-sm text-gray-700">
+//         {remainingTodos} remaining todos
+//       </p>
+//       <button
+//         onClick={() => logout()}
+//         className="mt-6 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-800 duration-500 mx-auto block"
+//       >
+//         Logout
+//       </button>
+//     </div>
+//   );
+// }
 
-export default Home;
+// export default Home;
 
 
 
@@ -537,3 +537,77 @@ export default Home;
 // }
 
 // export default Home;
+
+
+
+
+
+
+// If you have Navbar and Footer components, import them like this:
+import React from "react";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+
+const Home = () => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+  
+
+      {/* Hero Section */}
+      <section className="mt-20 bg-blue from-blue-50 text-black py-16 px-6 text-center">
+        <h2 className="text-3xl md:text-5xl font-bold mb-4 text-primary">
+          CNIC-Based Beneficiary Management
+        </h2>
+        <p className="text-gray-600 max-w-xl mx-auto">
+          A secure and efficient system to manage Saylani beneficiaries using role-based access, token scanning, dashboards, and history tracking.
+        </p>
+        <a href="/login" className="inline-block mt-6 bg-primary text-white px-6 py-3 rounded hover:bg-primary/90">
+          Get Started
+        </a>
+      </section>
+
+      {/* Stakeholder Roles */}
+      <section id="roles" className="py-16 bg-white px-6">
+        <h3 className="text-2xl font-bold text-center text-primary mb-8">Stakeholders</h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          {[
+            { title: "Admin", desc: "Manages users, monitors system, and has full access." },
+            { title: "Receptionist", desc: "Registers beneficiaries and issues tokens." },
+            { title: "Department Staff", desc: "Scans tokens and provides aid to beneficiaries." },
+            { title: "Beneficiary", desc: "Receives help using CNIC and assigned token." },
+          ].map((role) => (
+            <div key={role.title} className="bg-gray-50 shadow-md p-6 rounded-xl">
+              <h4 className="text-xl font-semibold text-primary mb-2">{role.title}</h4>
+              <p className="text-gray-600 text-sm">{role.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features */}
+      <section id="features" className="py-16 bg-blue-50 px-6">
+        <h3 className="text-2xl font-bold text-center text-primary mb-8">Core Features</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {[
+            "Token Issuance & Scanning",
+            "Role-Based Dashboards",
+            "CNIC Verification & Search",
+            "Real-Time Token Status",
+            "Activity History",
+            "JWT Auth & Security",
+          ].map((feature, i) => (
+            <div key={i} className="bg-white p-6 rounded-xl shadow-md">
+              <p className="text-gray-700">{feature}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+       {/* Footer */}
+       <Footer />     
+    </div>
+  );
+};
+
+export default Home;

@@ -7,6 +7,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import PageNotFound from "./components/PageNotFound";
 import { Toaster } from "react-hot-toast";
 import RegisterBeneficiary from "./components/RegisterBeneficiary";
+import AdminDashboard from "./components/AdminDashboard";
+import ReceptionistDashboard from "./components/ReceptionistDashboard";
 
 function App() {
   const token = localStorage.getItem("jwt");
@@ -19,12 +21,17 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        {/* <Route path="/beneficiary-register" element={<BeneficiaryRegister />} /> */}
+        <Route path="/AdminDashboard" element={<AdminDashboard />} />
         <Route path="/beneficiary/register" element={<RegisterBeneficiary />} />
+        <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />
+
+
+
+        {/* <Route path="/beneficiary-register" element={<BeneficiaryRegister />} /> */}
         {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> 
-  <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />
-  <Route path="/staff/dashboard" element={<StaffDashboard />} />
-  <Route path="/beneficiary/dashboard" element={<BeneficiaryDashboard />} />*/}
+       <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />
+       <Route path="/staff/dashboard" element={<StaffDashboard />} />
+       <Route path="/beneficiary/dashboard" element={<BeneficiaryDashboard />} />*/}
 
 
         <Route path="*" element={<PageNotFound />} />

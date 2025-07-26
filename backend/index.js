@@ -55,11 +55,11 @@ import cookieParser from "cookie-parser";
 import todoRoute from "./route/todo.route.js";
 import userRoute from "./route/user.route.js";
 import beneficiaryRoute from "./route/beneficiary.route.js";
+import receptionistRoute from "./route/receptionist.js"; // ✅ New route import
 
 dotenv.config();
 
-const app = express(); // <--- MUST come before using 'app'
-
+const app = express();
 const PORT = process.env.PORT || 4001;
 const DB_URI = process.env.MONGODB_URI;
 
@@ -76,7 +76,7 @@ app.use(
   })
 );
 
-// DB Connection
+// Database Connection
 try {
   await mongoose.connect(DB_URI);
   console.log("✅ Connected to MongoDB");
@@ -87,13 +87,14 @@ try {
 // Routes
 app.use("/todo", todoRoute);
 app.use("/user", userRoute);
-app.use("/beneficiary", beneficiaryRoute); // ✅ Now it's in the correct place
+app.use("/beneficiary", beneficiaryRoute);
+app.use("/api/receptionist", receptionistRoute); // ✅ Add receptionist route
 
-// Default route
+// Default Route
 app.get("/", (req, res) => {
   res.json({
     status: "OK",
-    message: "✅ Todo backend is running! Welcome to babar backend",
+    message: "✅ Todo backend is running! Welcome to Babar backend",
   });
 });
 
