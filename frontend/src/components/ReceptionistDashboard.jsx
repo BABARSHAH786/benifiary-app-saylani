@@ -11,7 +11,7 @@ const ReceptionistDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/receptionist/stats/today"); // Update if needed
+      const res = await axios.get("http://localhost:4001/api/receptionist/stats/today"); // Update if needed
       setStats(res.data);
     } catch (err) {
       console.error("Failed to fetch stats", err);
@@ -21,6 +21,15 @@ const ReceptionistDashboard = () => {
   useEffect(() => {
     fetchStats();
   }, []);
+
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    toast.error("Please login first");
+    window.location.href = "/reception/login";
+  }
+}, []);
+
 
   return (
     <div className="min-h-screen flex flex-col">

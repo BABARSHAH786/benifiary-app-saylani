@@ -9,6 +9,8 @@ import { Toaster } from "react-hot-toast";
 import RegisterBeneficiary from "./components/RegisterBeneficiary";
 import AdminDashboard from "./components/AdminDashboard";
 import ReceptionistDashboard from "./components/ReceptionistDashboard";
+import ReceptionLogin from "./components/ReceptionLogin";
+import ReceptionRegister from "./components/ReceptionRegister";
 
 function App() {
   const token = localStorage.getItem("jwt");
@@ -24,6 +26,10 @@ function App() {
         <Route path="/AdminDashboard" element={<AdminDashboard />} />
         <Route path="/beneficiary/register" element={<RegisterBeneficiary />} />
         <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />
+        <Route path="/reception/login" element={<ReceptionLogin />} />
+        <Route path="/reception/register" element={<ReceptionRegister />} />
+
+
 
 
 
