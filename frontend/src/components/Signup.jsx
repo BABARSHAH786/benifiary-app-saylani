@@ -15,7 +15,6 @@ function Signup() {
       const { data } = await axios.post(
          "https://backend-only-6264.onrender.com/user/signup",
         // "http://localhost:4001/user/signup",
-        // "https://todo-backend-8b06.onrender.com/auth/sign-up",
         {
           username,
           email,
