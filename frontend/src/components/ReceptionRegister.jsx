@@ -18,7 +18,7 @@ const ReceptionRegister = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:4001/receptionist/register', formData);
+      const res = await axios.post('http://localhost:4001/api/receptionist/register', formData);
       alert('Receptionist registered!');
     } catch (err) {
       alert('Error registering receptionist');

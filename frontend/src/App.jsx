@@ -13,6 +13,7 @@ import ReceptionLogin from "./components/ReceptionLogin";
 import ReceptionRegister from "./components/ReceptionRegister";
 import AdminRegister from "./components/AdminRegister";
 import AdminLogin from "./components/AdminLogin";
+import Student from "./components/student";
 
 function App() {
   const token = localStorage.getItem("jwt");
@@ -33,6 +34,8 @@ function App() {
         {/* admin */}
         <Route path="/admin/register" element={<AdminRegister />} />
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/student/register" element={<Student />} />
+
        {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
 
 
