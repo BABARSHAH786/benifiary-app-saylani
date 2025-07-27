@@ -11,6 +11,8 @@ import AdminDashboard from "./components/AdminDashboard";
 import ReceptionistDashboard from "./components/ReceptionistDashboard";
 import ReceptionLogin from "./components/ReceptionLogin";
 import ReceptionRegister from "./components/ReceptionRegister";
+import AdminRegister from "./components/AdminRegister";
+import AdminLogin from "./components/AdminLogin";
 
 function App() {
   const token = localStorage.getItem("jwt");
@@ -28,6 +30,10 @@ function App() {
         <Route path="/receptionist/dashboard" element={<ReceptionistDashboard />} />
         <Route path="/reception/login" element={<ReceptionLogin />} />
         <Route path="/reception/register" element={<ReceptionRegister />} />
+        {/* admin */}
+        <Route path="/admin/register" element={<AdminRegister />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+       {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
 
 
 

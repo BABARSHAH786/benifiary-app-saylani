@@ -56,7 +56,9 @@ import cookieParser from "cookie-parser";
 import todoRoute from "./route/todo.route.js";
 import userRoute from "./route/user.route.js";
 import beneficiaryRoute from "./route/beneficiary.route.js";
-import receptionistRoute from "./route/receptionistRoute.js"; // ✅ All receptionist routes
+import receptionistRoute from "./route/receptionistRoute.js";
+import adminRoute from "./route/adminRoute.js";
+import adminUserRoutes from "./route/Adminuserroute.js"; // ✅ MATCHES FILE CASE
 
 dotenv.config();
 
@@ -69,7 +71,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173", // fallback if .env missing
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -86,7 +88,9 @@ mongoose
 app.use("/todo", todoRoute);
 app.use("/user", userRoute);
 app.use("/beneficiary", beneficiaryRoute);
-app.use("/api/receptionist", receptionistRoute); // ✅ All receptionist routes under this
+app.use("/api/receptionist", receptionistRoute);
+app.use("/api/admin", adminRoute);
+app.use("/api/adminuser", adminUserRoutes);
 
 // Home route
 app.get("/", (req, res) => {

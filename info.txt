@@ -1,2 +1,5 @@
 this is link of backend admin
 http://localhost:5173/beneficiary/register
+
+this register work
+http://localhost:5173/reception/register
