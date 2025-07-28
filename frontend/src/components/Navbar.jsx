@@ -7,9 +7,10 @@ const Navbar = () => {
         <Link to="/" className="text-2xl font-bold">Saylani Beneficiary</Link>
         <nav className="space-x-4">
           <Link to="/" className="hover:underline">Home</Link>
-          <Link to="/beneficiary/register" className="hover:underline">Register</Link>
           <Link to="/scan-token" className="hover:underline">Scan Token</Link>
           <Link to="/dashboard" className="hover:underline">Dashboard</Link>
+          <Link to="/beneficiary/register" className="hover:underline">Benefiary Register</Link>
+          <Link to="/student/register" className="hover:underline">Student Register</Link>
           <Link to="/login" className="bg-white text-primary px-3 py-1 rounded hover:bg-gray-100">Login</Link>
         </nav>
       </div>

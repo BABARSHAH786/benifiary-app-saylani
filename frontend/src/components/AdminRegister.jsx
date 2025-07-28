@@ -1,79 +1,263 @@
-import React, { useState } from "react";
-import axios from "../api/axios"; // Ensure this is your axios instance file
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+// "use client";
 
-const AdminRegister = () => {
-  const navigate = useNavigate();
+// import { useState } from "react";
+// import axios from "axios";
+// import { toast } from "react-hot-toast";
+
+// export default function AdminRegister() {
+//   const [formData, setFormData] = useState({
+//     cnic: "",
+//     name: "",
+//     phone: "",
+//     address: "",
+//     purpose: "",
+//     department: "",
+//   });
+
+//   const [loading, setLoading] = useState(false);
+
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: value,
+//     }));
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     try {
+//       const { data } = await axios.post(
+//         "http://localhost:4001/admin/register",
+//         formData,
+//         { withCredentials: true }
+//       );
+
+//       toast.success(`✅ ${data.message} — Token: ${data.token}`);
+
+//       setFormData({
+//         cnic: "",
+//         name: "",
+//         phone: "",
+//         address: "",
+//         purpose: "",
+//         department: "",
+//       });
+//     } catch (err) {
+//       toast.error(err?.response?.data?.message || "❌ Registration failed");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const departments = ["Medical", "Food", "Education", "Shelter", "Other"];
+
+//   return (
+//     <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4">
+//       <form
+//         onSubmit={handleSubmit}
+//         className="bg-white p-8 rounded-xl shadow-lg w-full max-w-xl"
+//       >
+//         <h2 className="text-3xl font-bold mb-6 text-center text-blue-700">
+//           Register Admin
+//         </h2>
+
+//         {["cnic", "name", "phone", "address", "purpose"].map((field) => (
+//           <div key={field} className="mb-4">
+//             <label htmlFor={field} className="block mb-1 capitalize text-gray-700">
+//               {field}
+//             </label>
+//             <input
+//               id={field}
+//               type="text"
+//               name={field}
+//               value={formData[field]}
+//               onChange={handleChange}
+//               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+//               required
+//             />
+//           </div>
+//         ))}
+
+//         {/* Department select field */}
+//         <div className="mb-6">
+//           <label htmlFor="department" className="block mb-1 text-gray-700">
+//             Department
+//           </label>
+//           <select
+//             id="department"
+//             name="department"
+//             value={formData.department}
+//             onChange={handleChange}
+//             className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+//             required
+//           >
+//             <option value="" disabled>Select Department</option>
+//             {departments.map((dept) => (
+//               <option key={dept} value={dept}>
+//                 {dept}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         <button
+//           type="submit"
+//           disabled={loading}
+//           className={`w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition ${
+//             loading ? "opacity-70 cursor-not-allowed" : ""
+//           }`}
+//         >
+//           {loading ? "Registering..." : "Register"}
+//         </button>
+//       </form>
+//     </div>
+//   );
+// }
+
+
+
+// with dashooard pe pochay register k baad
+"use client";
+
+import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
+export default function AdminRegister() {
   const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: ""
+    cnic: "",
+    name: "",
+    phone: "",
+    address: "",
+    purpose: "",
+    department: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleRegister = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      const res = await axios.post("/api/adminuser/register", formData);
-      toast.success("Admin registered successfully!");
-      navigate("/admin/login");
+      const { data } = await axios.post(
+        "http://localhost:4001/admin/register",
+        formData,
+        { withCredentials: true }
+      );
+
+      toast.success(`✅ ${data.message} — Token: ${data.token}`);
+
+      // Clear form
+      setFormData({
+        cnic: "",
+        name: "",
+        phone: "",
+        address: "",
+        purpose: "",
+        department: "",
+      });
+
+      setIsModalOpen(false);
+      navigate("/AdminDashboard"); // ✅ Redirect after successful register
     } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.message || "Registration failed");
+      toast.error(err?.response?.data?.message || "❌ Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
+  const departments = ["Medical", "Food", "Education", "Shelter", "Other"];
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleRegister}
-        className="bg-white p-6 rounded shadow-md w-full max-w-md"
+    <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4">
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="bg-blue-600 text-white py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
       >
-        <h2 className="text-2xl font-bold mb-4">Admin Register</h2>
+        Register New Admin
+      </button>
 
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={formData.username}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-          required
-        />
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex justify-center items-center z-50 p-4">
+          <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-xl relative">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"
+              aria-label="Close modal"
+            >
+              &times;
+            </button>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-          required
-        />
+            <h2 className="text-3xl font-bold mb-6 text-center text-blue-700">
+              Register Admin
+            </h2>
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-          required
-        />
+            <form onSubmit={handleSubmit}>
+              {["cnic", "name", "phone", "address", "purpose"].map((field) => (
+                <div key={field} className="mb-4">
+                  <label htmlFor={field} className="block mb-1 capitalize text-gray-700">
+                    {field}
+                  </label>
+                  <input
+                    id={field}
+                    type="text"
+                    name={field}
+                    value={formData[field]}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    required
+                  />
+                </div>
+              ))}
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          Register
-        </button>
-      </form>
+              <div className="mb-6">
+                <label htmlFor="department" className="block mb-1 text-gray-700">
+                  Department
+                </label>
+                <select
+                  id="department"
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="" disabled>Select Department</option>
+                  {departments.map((dept) => (
+                    <option key={dept} value={dept}>
+                      {dept}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className={`w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition ${
+                  loading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
+              >
+                {loading ? "Registering..." : "Register"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-export default AdminRegister;
+}

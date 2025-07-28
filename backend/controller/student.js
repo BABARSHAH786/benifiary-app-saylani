@@ -1,6 +1,6 @@
 // backend/controller/beneficiary.controller.js
 import { v4 as uuidv4 } from "uuid";
-import Admin from "../model/adminModelAb.js";
+import Student from "../model/student.js";
 
 // ✅ Register new beneficiary
 export const registerBeneficiary = async (req, res) => {
@@ -11,14 +11,14 @@ export const registerBeneficiary = async (req, res) => {
       return res.status(400).json({ message: "Required fields missing" });
     }
 
-    const exists = await Admin.findOne({ cnic });
+    const exists = await Student.findOne({ cnic });
     if (exists) {
-      return res.status(400).json({ message: "Admin already registered" });
+      return res.status(400).json({ message: "Beneficiary already registered" });
     }
 
     const token = uuidv4().slice(0, 8).toUpperCase();
 
-    const admin = await Admin.create({
+    const student = await Student.create({
       cnic,
       name,
       phone,
@@ -30,9 +30,9 @@ export const registerBeneficiary = async (req, res) => {
     });
 
     res.status(201).json({
-      message: "Admin registered successfully",
-      token: admin.token,
-      admin,
+      message: "Beneficiary registered successfully",
+      token: beneficiary.token,
+      beneficiary,
     });
   } catch (error) {
     console.error("Register Error:", error);
@@ -45,13 +45,13 @@ export const getBeneficiaryByCNIC = async (req, res) => {
   try {
     const { cnic } = req.params;
 
-    const admin = await Admin.findOne({ cnic });
+    const beneficiary = await Beneficiary.findOne({ cnic });
 
-    if (!admin) {
-      return res.status(404).json({ message: "Admin not found" });
+    if (!beneficiary) {
+      return res.status(404).json({ message: "Beneficiary not found" });
     }
 
-    res.status(200).json({ admin });
+    res.status(200).json({ beneficiary });
   } catch (error) {
     console.error("Fetch Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -61,7 +61,7 @@ export const getBeneficiaryByCNIC = async (req, res) => {
 // ✅ Dummy placeholder for future route
 export const getAllBeneficiaries = async (req, res) => {
   try {
-    const beneficiaries = await Admin.find({});
+    const beneficiaries = await Beneficiary.find({});
     res.status(200).json({ beneficiaries });
   } catch (error) {
     console.error("Fetch All Error:", error);

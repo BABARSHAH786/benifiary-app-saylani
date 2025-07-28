@@ -39,5 +39,5 @@ const beneficiarySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Admin = mongoose.model("Admin", beneficiarySchema);
-export default Admin;
+const Student = mongoose.model("Student", beneficiarySchema);
+export default Student;

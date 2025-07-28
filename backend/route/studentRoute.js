@@ -1,11 +1,12 @@
 import express from 'express';
 import { verifyToken, checkRole } from "../middleware/auth.middleware.js";
-import Beneficiary from "../model/beneficiary.model.js";
+import Student from '../model/student.js';
+
 import {
   registerBeneficiary,
   getAllBeneficiaries,
   getBeneficiaryByCNIC,
-} from '../controller/beneficiary.controller.js';
+} from '../controller/student.js';
 
 const router = express.Router(); // ✅ This was missing
 
@@ -21,8 +22,8 @@ router.get('/cnic/:cnic', getBeneficiaryByCNIC);
 // Get stats (only Admin)
 router.get("/stats", verifyToken, checkRole(["Admin"]), async (req, res) => {
   try {
-    const total = await Beneficiary.countDocuments();
-    const today = await Beneficiary.countDocuments({
+    const total = await Student.countDocuments();
+    const today = await Student.countDocuments({
       createdAt: { $gte: new Date().setHours(0, 0, 0, 0) },
     });
 

@@ -221,6 +221,7 @@ import adminUserRoutes from "./route/Adminuserroute.js"; // ✅ MATCHES FILE CAS
 // admin
 import bcrypt from "bcrypt"
 import studentRoute from "./route/studentRoute.js"; // ✅ MATCHES FILE CASE
+import adminRouteAb from "./route/adminRouteAb.js"; // 
 
 import router from "./route/index.js"
 
@@ -256,6 +257,10 @@ app.use("/student", studentRoute);
 app.use("/api/receptionist", receptionistRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/adminuser", adminUserRoutes);
+app.use("/student", studentRoute);
+app.use("/admin", adminRouteAb);
+
+
 
 // Home route
 app.get("/", (req, res) => {
