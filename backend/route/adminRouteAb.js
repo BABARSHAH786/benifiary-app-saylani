@@ -50,7 +50,7 @@ import {
   loginAdmin,
   getAllAdmins,
   logoutAdmin
-} from "../controller/adminAb.js";
+} from "../controllers/adminAb.js";
 import { verifyToken, checkRole } from "../middleware/auth.middleware.js";
 
 const router = express.Router();

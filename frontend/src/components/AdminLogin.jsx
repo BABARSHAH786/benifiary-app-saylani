@@ -74,8 +74,10 @@ export default function AdminLogin() {
       toast.success(`✅ ${data.message}`);
       console.log('Login successful:', data);
       // You can now store the token (e.g., in localStorage or a state management solution)
-      // localStorage.setItem('adminToken', data.token);
-      // localStorage.setItem('adminInfo', JSON.stringify(data.admin));
+      localStorage.setItem('adminToken', data.token);
+      localStorage.setItem('adminInfo', JSON.stringify(data.admin));
+localStorage.setItem('adminId', data.admin._id);
+localStorage.setItem('adminName', data.admin.name);
 
       // Redirect to the Admin Dashboard
       navigate('/admin/dashboard'); // Navigate to your AdminDashboard route

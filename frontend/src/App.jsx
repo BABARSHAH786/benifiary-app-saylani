@@ -14,6 +14,9 @@ import ReceptionRegister from "./components/ReceptionRegister";
 import AdminRegister from "./components/AdminRegister";
 import AdminLogin from "./components/AdminLogin";
 import Student from "./components/student";
+import AdminPost from "./components/AdminPost";
+import BlogList from "./components/BlogList";
+import AdminDashboardblog from "./components/AdminDashboardblog";
 
 function App() {
   const token = localStorage.getItem("jwt");
@@ -35,6 +38,12 @@ function App() {
         <Route path="/admin/register" element={<AdminRegister />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/student/register" element={<Student />} />
+        <Route path="/admin/post" element={<AdminPost />} />
+        <Route path="/admin/blog" element={<BlogList />} />
+        <Route path="/admin/dashbordblog" element={<AdminDashboardblog />} />
+
+
+
 
        {/* <Route path="/admin/dashboard" element={<AdminDashboard />} /> */}
 

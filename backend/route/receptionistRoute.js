@@ -40,7 +40,7 @@
 // new
 // route/receptionistRoute.js
 import express from "express";
-import Beneficiary from "../model/Beneficiary.js";
+import Beneficiary from "../models/Beneficiary.js";
 
 const router = express.Router();
 

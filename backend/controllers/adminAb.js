@@ -277,7 +277,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
 // Ensure this path is correct relative to adminAb.js
-import Admin from "../model/adminModelAb.js";
+import Admin from "../models/adminModelAb.js";
 
 // ✅ Register Admin (with CNIC & token)
 export const registerAdmin = async (req, res) => {

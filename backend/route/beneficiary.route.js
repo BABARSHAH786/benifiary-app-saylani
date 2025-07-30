@@ -18,12 +18,12 @@
 
 import express from 'express';
 import { verifyToken, checkRole } from "../middleware/auth.middleware.js";
-import Beneficiary from "../model/beneficiary.model.js";
+import Beneficiary from "../models/beneficiary.model.js";
 import {
   registerBeneficiary,
   getAllBeneficiaries,
   getBeneficiaryByCNIC,
-} from '../controller/beneficiary.controller.js';
+} from '../controllers/beneficiary.controller.js';
 
 const router = express.Router(); // ✅ This was missing
 

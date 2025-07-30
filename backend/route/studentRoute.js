@@ -1,12 +1,12 @@
 import express from 'express';
 import { verifyToken, checkRole } from "../middleware/auth.middleware.js";
-import Student from '../model/student.js';
+import Student from '../models/student.js';
 
 import {
   registerBeneficiary,
   getAllBeneficiaries,
   getBeneficiaryByCNIC,
-} from '../controller/student.js';
+} from '../controllers/student.js';
 
 const router = express.Router(); // ✅ This was missing
 

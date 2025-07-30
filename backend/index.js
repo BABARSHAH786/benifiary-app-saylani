@@ -222,6 +222,8 @@ import receptionistRoute from "./route/receptionistRoute.js";
 import bcrypt from "bcrypt"
 import studentRoute from "./route/studentRoute.js"; // ✅ MATCHES FILE CASE
 import adminRouteAb from "./route/adminRouteAb.js"; // 
+import postRoutes from "./route/postRoutes.js"
+import blogRoute from "./route/blog.route.js";
 
 import router from "./route/index.js"
 
@@ -259,6 +261,10 @@ app.use("/api/receptionist", receptionistRoute);
 // app.use("/api/adminuser", adminUserRoutes);
 app.use("/student", studentRoute);
 app.use("/admin", adminRouteAb);
+app.use('/api/posts', postRoutes); // NEW: Use post routes under /api/posts
+app.use("/api/blogs", blogRoute);
+
+
 
 
 

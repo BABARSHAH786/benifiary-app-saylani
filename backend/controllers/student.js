@@ -1,6 +1,6 @@
 // backend/controller/beneficiary.controller.js
 import { v4 as uuidv4 } from "uuid";
-import Student from "../model/student.js";
+import Student from "../models/student.js";
 
 // ✅ Register new beneficiary
 export const registerBeneficiary = async (req, res) => {

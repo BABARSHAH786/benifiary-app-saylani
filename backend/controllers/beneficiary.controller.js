@@ -1,5 +1,5 @@
 // backend/controller/beneficiary.controller.js
-import Beneficiary from "../model/beneficiary.model.js";
+import Beneficiary from "../models/beneficiary.model.js";
 import { v4 as uuidv4 } from "uuid";
 
 // ✅ Register new beneficiary

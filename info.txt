@@ -3,3 +3,5 @@ http://localhost:5173/beneficiary/register
 
 this register work
 http://localhost:5173/reception/register
+
+fist person login get token then allow post edit etc bc token say verify ho raha hai jis k liye lgin zaroori hai 

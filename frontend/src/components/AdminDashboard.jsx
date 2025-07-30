@@ -192,7 +192,7 @@ import React, { useEffect, useState } from "react";
 import axios from "../api/axios.js";
 import { motion } from "framer-motion";
 import { FaUsers, FaUserTie, FaClipboardList } from "react-icons/fa";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import { Link,useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -269,16 +269,36 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <button
+    <>
+    {/* NAVBAR BABAR */}
+    <header className="bg-primary text-black shadow">
+          <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+            <Link to="/" className="text-2xl font-bold">Saylani Beneficiary</Link>
+            <nav className="space-x-4">
+              <Link to="/" className="hover:underline">Home</Link>
+              <Link to="/admin/register" className="hover:underline">Admin Register</Link>
+              <Link to="/admin/login" className="hover:underline">Admin Login</Link>
+              <Link to="/admin/dashboard" className="hover:underline">Admin Dashboard</Link>
+              <Link to="/admin/post" className="hover:underline">Post</Link>
+
+              <Link to="/student/register" className="hover:underline">Student Register</Link>
+              <Link to="/benefiary/register" className="hover:underline">Benefiary Register</Link>
+              <Link to="/logot" className="">
+              <button
           onClick={handleLogout}
           className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
         >
           Logout
-        </button>
-      </div>
+        </button></Link>
+            </nav>
+          </div>
+        </header>
+    
+
+
+
+    <div className="min-h-screen bg-gray-50 p-6">
+      
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {cards.map((card, index) => (
@@ -298,6 +318,7 @@ const AdminDashboard = () => {
         ))}
       </div>
     </div>
+    </>
   );
 };
 
