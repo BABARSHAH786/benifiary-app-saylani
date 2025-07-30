@@ -192,60 +192,65 @@ import React, { useEffect, useState } from "react";
 import axios from "../api/axios.js";
 import { motion } from "framer-motion";
 import { FaUsers, FaUserTie, FaClipboardList } from "react-icons/fa";
-import { Link,useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import { Link } from "react-router-dom";
 
 const AdminDashboard = () => {
+  const [isAuth, setIsAuth] = useState(null); // null = checking
   const [stats, setStats] = useState({
     totalBeneficiaries: 0,
     todayBeneficiaries: 0,
     totalReceptionists: 0,
   });
+  const [blogs, setBlogs] = useState([]);
 
-  const navigate = useNavigate(); // Initialize useNavigate hook
-
-  // ✅ Fetch Stats from Backend
+  // ✅ Check Auth on Mount
   useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (!token) {
+      setIsAuth(false);
+      window.location.href = "/admin/login";
+    } else {
+      setIsAuth(true);
+    }
+  }, []);
+
+  // ✅ Fetch Stats
+  useEffect(() => {
+    if (!isAuth) return;
     const fetchStats = async () => {
       try {
         const res = await axios.get("/api/receptionist/stats/today");
-        // You can create more APIs for total counts
         setStats({
-          totalBeneficiaries: 120, // mock until API ready
+          totalBeneficiaries: 120,
           todayBeneficiaries: res.data.todayCount || 0,
-          totalReceptionists: 5, // mock until API ready
+          totalReceptionists: 5,
         });
       } catch (err) {
         console.error(err);
-        // Handle token expiration or unauthorized access
-        if (err.response && err.response.status === 401) {
-          handleLogout(); // Automatically log out if unauthorized
-        }
+        if (err.response && err.response.status === 401) handleLogout();
       }
     };
-
     fetchStats();
-  }, []);
+  }, [isAuth]);
 
-  const handleLogout = async () => {
-    try {
-      // Call your backend logout endpoint (optional, but good practice)
-      await axios.post("/api/admin/logout"); // Assuming this is your logout endpoint
+  // ✅ Fetch Blogs
+  useEffect(() => {
+    if (!isAuth) return;
+    axios
+      .get("http://localhost:4001/api/blogs")
+      .then((res) => setBlogs(res.data))
+      .catch((err) => console.error(err));
+  }, [isAuth]);
 
-      // Clear the JWT token from local storage
-      localStorage.removeItem("adminToken"); // Or sessionStorage.removeItem("adminToken");
-      localStorage.removeItem("adminInfo"); // Clear any stored admin info
-
-      // Redirect to the login page
-      navigate("/admin/login"); // Adjust this path to your admin login route
-      console.log("Admin logged out successfully.");
-    } catch (error) {
-      console.error("Logout failed:", error);
-      // Even if backend call fails, proceed with client-side logout
-      localStorage.removeItem("adminToken");
-      localStorage.removeItem("adminInfo");
-      navigate("/admin/login");
-    }
+  // ✅ Logout
+  const handleLogout = () => {
+    localStorage.removeItem("jwt");
+    window.location.href = "/admin/login";
   };
+
+  if (isAuth === null) {
+    return <div className="text-center p-10">Checking authentication...</div>;
+  }
 
   const cards = [
     {
@@ -270,54 +275,62 @@ const AdminDashboard = () => {
 
   return (
     <>
-    {/* NAVBAR BABAR */}
-    <header className="bg-primary text-black shadow">
-          <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-            <Link to="/" className="text-2xl font-bold">Saylani Beneficiary</Link>
-            <nav className="space-x-4">
-              <Link to="/" className="hover:underline">Home</Link>
-              <Link to="/admin/register" className="hover:underline">Admin Register</Link>
-              <Link to="/admin/login" className="hover:underline">Admin Login</Link>
-              <Link to="/admin/dashboard" className="hover:underline">Admin Dashboard</Link>
-              <Link to="/admin/post" className="hover:underline">Post</Link>
+      {/* Navbar */}
+      <header className="bg-primary text-black shadow">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <Link to="/" className="text-2xl font-bold">Saylani Beneficiary</Link>
+          <nav className="space-x-4">
+            <Link to="/" className="hover:underline">Home</Link>
+            <Link to="/admin/register" className="hover:underline">Admin Register</Link>
+            <Link to="/admin/login" className="hover:underline">Admin Login</Link>
+            <Link to="/admin/dashboard" className="hover:underline">Admin Dashboard</Link>
+            <Link to="/admin/post" className="hover:underline">Post</Link>
+            <Link to="/student/register" className="hover:underline">Student Register</Link>
+            <Link to="/benefiary/register" className="hover:underline">Benefiary Register</Link>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+            >
+              Logout
+            </button>
+          </nav>
+        </div>
+      </header>
 
-              <Link to="/student/register" className="hover:underline">Student Register</Link>
-              <Link to="/benefiary/register" className="hover:underline">Benefiary Register</Link>
-              <Link to="/logot" className="">
-              <button
-          onClick={handleLogout}
-          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-        >
-          Logout
-        </button></Link>
-            </nav>
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {cards.map((card, index) => (
+            <motion.div
+              key={index}
+              className={`p-6 rounded-xl shadow-lg flex items-center justify-between ${card.color}`}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.2 }}
+            >
+              <div>
+                <h2 className="text-lg font-semibold">{card.title}</h2>
+                <p className="text-2xl font-bold mt-2">{card.value}</p>
+              </div>
+              {card.icon}
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="p-6 max-w-5xl mx-auto">
+          <h1 className="text-3xl font-bold mb-6">Latest Blogs</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {blogs.map((blog) => (
+              <div key={blog._id} className="bg-white shadow-lg p-5 rounded">
+                <h2 className="text-xl font-bold">{blog.title}</h2>
+                <p className="text-gray-700 mt-2">{blog.content}</p>
+                <span className="text-sm text-gray-500">
+                  Published on {new Date(blog.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+            ))}
           </div>
-        </header>
-    
-
-
-
-    <div className="min-h-screen bg-gray-50 p-6">
-      
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cards.map((card, index) => (
-          <motion.div
-            key={index}
-            className={`p-6 rounded-xl shadow-lg flex items-center justify-between ${card.color}`}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.2 }}
-          >
-            <div>
-              <h2 className="text-lg font-semibold">{card.title}</h2>
-              <p className="text-2xl font-bold mt-2">{card.value}</p>
-            </div>
-            {card.icon}
-          </motion.div>
-        ))}
+        </div>
       </div>
-    </div>
     </>
   );
 };
