@@ -253,49 +253,40 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminPost() {
   const [posts, setPosts] = useState([]);
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
-  const [editingPost, setEditingPost] = useState(null); // Stores the post being edited
+  const [editingPost, setEditingPost] = useState(null);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate for redirection
+  const navigate = useNavigate();
+  const [image, setImage] = useState(null);
 
-  // --- IMPORTANT: Get Admin Token and Name from localStorage ---
-  // These values are set in AdminLogin.jsx after a successful login.
-  // This is how the frontend knows who is logged in and what token to send.
   const adminToken = localStorage.getItem('adminToken');
-  const adminName = localStorage.getItem('adminName'); // Used for display, or if backend needs authorName directly
+  const adminName = localStorage.getItem('adminName');
 
-  // --- Axios instance with interceptor for Authorization header ---
-  // This 'authAxios' instance will automatically include the JWT token
-  // in the 'Authorization: Bearer <token>' header for every request it makes.
-  // This is crucial for your backend's 'protect' middleware to work.
   const authAxios = axios.create({
-    baseURL: 'http://localhost:4001', // Your backend base URL
+    baseURL: 'http://localhost:4001',
     headers: {
-      Authorization: adminToken ? `Bearer ${adminToken}` : '', // Only add if token exists
+      Authorization: adminToken ? `Bearer ${adminToken}` : '',
     },
     withCredentials: true,
   });
 
   useEffect(() => {
-    // --- Authentication Check on Component Load ---
-    // If no adminToken is found in localStorage, redirect to login page.
     if (!adminToken) {
       toast.error('Please log in as an administrator to access the dashboard.');
-      navigate('/admin/login'); // Redirect to login page
-      return; // Stop execution if not authenticated
+      navigate('/admin/login');
+      return;
     }
     fetchPosts();
-  }, [adminToken, navigate]); // Re-run effect if adminToken changes or navigate function changes
+  }, [adminToken, navigate]);
 
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      // Fetching all posts is typically a public route, so no token is strictly needed here.
       const { data } = await axios.get('http://localhost:4001/api/posts');
       setPosts(data.posts);
       toast.success('Posts loaded!');
@@ -316,36 +307,34 @@ export default function AdminPost() {
       setLoading(false);
       return;
     }
-    // --- Critical: Check for token before making protected API call ---
     if (!adminToken) {
       toast.error('Authentication token missing. Please log in again.');
       setLoading(false);
-      navigate('/admin/login'); // Redirect if token is missing
+      navigate('/admin/login');
       return;
     }
 
     try {
-      // --- Use authAxios for protected 'create post' route ---
-      // The backend will get the authorId and authorName from the token via middleware.
-      const { data } = await authAxios.post('/api/posts', {
-        title: newPostTitle,
-        content: newPostContent,
-        // authorId and authorName are NOT sent from frontend anymore.
-        // They are derived from the authenticated token on the backend.
+      const formData = new FormData();
+      formData.append('title', newPostTitle);
+      formData.append('content', newPostContent);
+      if (image) formData.append('image', image);
+
+      const { data } = await authAxios.post('/api/posts', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
+
       toast.success(data.message);
       setNewPostTitle('');
       setNewPostContent('');
-      fetchPosts(); // Refresh the list of posts after adding
+      setImage(null);
+      fetchPosts();
     } catch (err) {
       console.error('Error adding post:', err);
       toast.error(err?.response?.data?.message || 'Failed to add post.');
-      // Handle 401 Unauthorized errors (e.g., expired or invalid token)
       if (err.response && err.response.status === 401) {
-        localStorage.removeItem('adminToken');
-        localStorage.removeItem('adminId');
-        localStorage.removeItem('adminName');
-        navigate('/admin/login'); // Redirect to login
+        localStorage.clear();
+        navigate('/admin/login');
       }
     } finally {
       setLoading(false);
@@ -353,7 +342,7 @@ export default function AdminPost() {
   };
 
   const handleEditClick = (post) => {
-    setEditingPost({ ...post }); // Set the post data to the editing state
+    setEditingPost({ ...post });
   };
 
   const handleUpdatePost = async (e) => {
@@ -365,31 +354,32 @@ export default function AdminPost() {
       setLoading(false);
       return;
     }
-    // --- Critical: Check for token before making protected API call ---
     if (!adminToken) {
       toast.error('Authentication token missing. Please log in again.');
       setLoading(false);
-      navigate('/admin/login'); // Redirect if token is missing
+      navigate('/admin/login');
       return;
     }
 
     try {
-      // --- Use authAxios for protected 'update post' route ---
-      const { data } = await authAxios.put(`/api/posts/${editingPost._id}`, {
-        title: editingPost.title,
-        content: editingPost.content,
-        isPublished: editingPost.isPublished,
+      const formData = new FormData();
+      formData.append('title', editingPost.title);
+      formData.append('content', editingPost.content);
+      formData.append('isPublished', editingPost.isPublished);
+      if (editingPost.newImage) formData.append('image', editingPost.newImage);
+
+      const { data } = await authAxios.put(`/api/posts/${editingPost._id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
+
       toast.success(data.message);
-      setEditingPost(null); // Clear editing state
-      fetchPosts(); // Refresh the list of posts after updating
+      setEditingPost(null);
+      fetchPosts();
     } catch (err) {
       console.error('Error updating post:', err);
       toast.error(err?.response?.data?.message || 'Failed to update post.');
       if (err.response && err.response.status === 401) {
-        localStorage.removeItem('adminToken');
-        localStorage.removeItem('adminId');
-        localStorage.removeItem('adminName');
+        localStorage.clear();
         navigate('/admin/login');
       }
     } finally {
@@ -398,32 +388,26 @@ export default function AdminPost() {
   };
 
   const handleDeletePost = async (postId) => {
-    // Using window.confirm for simplicity. For better UX, use a custom modal.
     const confirmDelete = window.confirm('Are you sure you want to delete this post?');
-    if (!confirmDelete) {
-      return; // User cancelled
-    }
+    if (!confirmDelete) return;
+
     setLoading(true);
-    // --- Critical: Check for token before making protected API call ---
     if (!adminToken) {
       toast.error('Authentication token missing. Please log in again.');
       setLoading(false);
-      navigate('/admin/login'); // Redirect if token is missing
+      navigate('/admin/login');
       return;
     }
 
     try {
-      // --- Use authAxios for protected 'delete post' route ---
       const { data } = await authAxios.delete(`/api/posts/${postId}`);
       toast.success(data.message);
-      fetchPosts(); // Refresh the list of posts after deleting
+      fetchPosts();
     } catch (err) {
       console.error('Error deleting post:', err);
       toast.error(err?.response?.data?.message || 'Failed to delete post.');
       if (err.response && err.response.status === 401) {
-        localStorage.removeItem('adminToken');
-        localStorage.removeItem('adminId');
-        localStorage.removeItem('adminName');
+        localStorage.clear();
         navigate('/admin/login');
       }
     } finally {
@@ -434,9 +418,7 @@ export default function AdminPost() {
   return (
     <div className="min-h-screen bg-gray-100 p-8 font-inter">
       <h1 className="text-4xl font-bold text-center text-blue-800 mb-10">Admin Dashboard</h1>
-      {/* Display logged-in admin's name */}
       {adminName && <p className="text-center text-gray-600 mb-8">Logged in as: <span className="font-semibold">{adminName}</span></p>}
-
 
       {/* Add New Post Section */}
       <div className="bg-white p-6 rounded-xl shadow-lg mb-8 max-w-2xl mx-auto">
@@ -454,6 +436,10 @@ export default function AdminPost() {
               required
             />
           </div>
+          <div className="mb-4">
+            <label htmlFor="image" className="block text-gray-700 text-sm font-bold mb-2">Image</label>
+            <input type="file" id="image" accept="image/*" onChange={(e) => setImage(e.target.files[0])} className="w-full" />
+          </div>
           <div className="mb-6">
             <label htmlFor="newPostContent" className="block text-gray-700 text-sm font-bold mb-2">Content</label>
             <textarea
@@ -468,19 +454,15 @@ export default function AdminPost() {
           </div>
           <button
             type="submit"
-            disabled={loading || !adminToken} // Disable if loading or no token
-            className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200 ${loading || !adminToken ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={loading || !adminToken}
+            className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ${loading || !adminToken ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {loading ? 'Adding...' : 'Add Post'}
           </button>
-          {!adminToken && (
-            <p className="text-red-500 text-sm mt-2">Please log in to add posts.</p>
-          )}
         </form>
       </div>
 
-
-      {/* Edit Post Section (Conditional Rendering) */}
+      {/* Edit Post Section */}
       {editingPost && (
         <div className="bg-yellow-50 p-6 rounded-xl shadow-lg mb-8 max-w-2xl mx-auto border border-yellow-300">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Edit Post</h2>
@@ -495,6 +477,10 @@ export default function AdminPost() {
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500"
                 required
               />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="editImage" className="block text-gray-700 text-sm font-bold mb-2">Change Image</label>
+              <input type="file" id="editImage" accept="image/*" onChange={(e) => setEditingPost({ ...editingPost, newImage: e.target.files[0] })} className="w-full" />
             </div>
             <div className="mb-4">
               <label htmlFor="editPostContent" className="block text-gray-700 text-sm font-bold mb-2">Content</label>
@@ -518,25 +504,16 @@ export default function AdminPost() {
               <label htmlFor="isPublished" className="text-gray-700 text-sm font-bold">Published</label>
             </div>
             <div className="flex justify-end space-x-4">
-              <button
-                type="button"
-                onClick={() => setEditingPost(null)}
-                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200"
-              >
+              <button type="button" onClick={() => setEditingPost(null)} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">
                 Cancel
               </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className={`bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-              >
+              <button type="submit" disabled={loading} className={`bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                 {loading ? 'Updating...' : 'Update Post'}
               </button>
             </div>
           </form>
         </div>
       )}
-
 
       {/* List of Posts Section */}
       <div className="bg-white p-6 rounded-xl shadow-lg max-w-4xl mx-auto">
@@ -546,24 +523,17 @@ export default function AdminPost() {
         <div className="space-y-6">
           {posts.map((post) => (
             <div key={post._id} className="border border-gray-200 p-4 rounded-lg shadow-sm">
+              {post.image && <img src={`http://localhost:4001${post.image}`} alt={post.title} className="w-full max-h-64 object-cover rounded mb-3" />}
               <h3 className="text-xl font-bold text-gray-900 mb-2">{post.title}</h3>
               <p className="text-gray-700 mb-3">{post.content}</p>
               <p className="text-sm text-gray-500">
-                By: {post.authorName} on {new Date(post.createdAt).toLocaleDateString()}
-                {' | '}
-                Status: {post.isPublished ? 'Published' : 'Draft'}
+                By: {post.authorName} on {new Date(post.createdAt).toLocaleDateString()} | Status: {post.isPublished ? 'Published' : 'Draft'}
               </p>
               <div className="mt-4 flex space-x-3">
-                <button
-                  onClick={() => handleEditClick(post)}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition duration-200"
-                >
+                <button onClick={() => handleEditClick(post)} className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg text-sm">
                   Edit
                 </button>
-                <button
-                  onClick={() => handleDeletePost(post._id)}
-                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition duration-200"
-                >
+                <button onClick={() => handleDeletePost(post._id)} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg text-sm">
                   Delete
                 </button>
               </div>

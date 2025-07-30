@@ -251,6 +251,8 @@ mongoose
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
+// ✅ Serve uploaded images
+
 // Routes
 app.use("/todo", todoRoute);
 app.use("/user", userRoute);
@@ -263,6 +265,9 @@ app.use("/student", studentRoute);
 app.use("/admin", adminRouteAb);
 app.use('/api/posts', postRoutes); // NEW: Use post routes under /api/posts
 app.use("/api/blogs", blogRoute);
+app.use("/uploads", express.static("uploads"));
+
+
 
 
 
