@@ -215,8 +215,8 @@ import todoRoute from "./route/todo.route.js";
 import userRoute from "./route/user.route.js";
 import beneficiaryRoute from "./route/beneficiary.route.js";
 import receptionistRoute from "./route/receptionistRoute.js";
-import adminRoute from "./route/adminRoute.js";
-import adminUserRoutes from "./route/Adminuserroute.js"; // ✅ MATCHES FILE CASE
+// import adminRoute from "./route/adminRoute.js";
+// import adminUserRoutes from "./route/Adminuserroute.js"; // ✅ MATCHES FILE CASE
 // import student from "./route/beneficiary.route.js"; // ✅ MATCHES FILE CASE
 // admin
 import bcrypt from "bcrypt"
@@ -255,8 +255,8 @@ app.use("/user", userRoute);
 app.use("/beneficiary", beneficiaryRoute);
 app.use("/student", studentRoute);
 app.use("/api/receptionist", receptionistRoute);
-app.use("/api/admin", adminRoute);
-app.use("/api/adminuser", adminUserRoutes);
+// app.use("/api/admin", adminRoute);
+// app.use("/api/adminuser", adminUserRoutes);
 app.use("/student", studentRoute);
 app.use("/admin", adminRouteAb);
 

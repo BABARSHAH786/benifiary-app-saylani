@@ -1,186 +1,154 @@
-const handleLogin = async (e) => {
-  e.preventDefault();
-  try {
-    const { data } = await axios.post(
-      "http://localhost:4001/user/login",
-      {
-        email,
-        password,
-      },
-      {
-        withCredentials: true, // ⬅️ important for cookie-based auth
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+import React, { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-hot-toast'; // Assuming you have react-hot-toast installed
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 
-    toast.success(data.message || "Login successful");
+export default function AdminLogin() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
-    localStorage.setItem("jwt", data.token); // optional if cookie is used
-    localStorage.setItem("userRole", data.user?.role || "");
+  // Custom CSS for animations. Tailwind CSS handles most styling,
+  // but keyframe animations like these are often defined with raw CSS.
+  const styles = `
+    /* Background animation */
+    @keyframes gradientAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
 
-    navigateTo("/"); // Go to dashboard or homepage
-    setEmail("");
-    setPassword("");
-  } catch (error) {
-    toast.error(error?.response?.data?.message || "Login failed");
-  }
-};
+    .animated-background {
+        background: linear-gradient(270deg, #6a11cb, #2575fc);
+        background-size: 400% 400%;
+        animation: gradientAnimation 15s ease infinite;
+    }
 
+    /* Card entry animation */
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
 
+    .card-enter-animation {
+        animation: fadeInScale 0.7s ease-out forwards;
+    }
 
+    /* Input focus animation */
+    .input-focus-animation:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5); /* Tailwind's blue-500 with opacity */
+        border-color: #3b82f6; /* Tailwind's blue-500 */
+    }
 
+    /* Button hover animation */
+    .button-hover-animation {
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .button-hover-animation:hover {
+        transform: translateY(-2px);
+    }
+    .button-hover-animation:active {
+        transform: translateY(0);
+    }
+  `;
 
-import axios from "axios";
-import React, { useState } from "react";
-import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
-function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const navigateTo = useNavigate();
-
-  const handleRegister = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading state to true when form is submitted
+
     try {
       const { data } = await axios.post(
-        // https://backend-only-6264.onrender.com
-        // "https://backend-only-6264.onrender.com/user/login", //original
-        "http://localhost:4001/user/login",
-
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        'http://localhost:4001/admin/login', // Your backend login API endpoint
+        { email, password },
+        { withCredentials: true } // Important if your backend uses cookies/sessions
       );
-      console.log(data);
-      toast.success(data.message || "User loggedin successfully");
-      localStorage.setItem("jwt", data.token);
-      navigateTo("/");
-      setEmail("");
-      setPassword("");
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.errors || "User registration failed");
+
+      // On successful login
+      toast.success(`✅ ${data.message}`);
+      console.log('Login successful:', data);
+      // You can now store the token (e.g., in localStorage or a state management solution)
+      // localStorage.setItem('adminToken', data.token);
+      // localStorage.setItem('adminInfo', JSON.stringify(data.admin));
+
+      // Redirect to the Admin Dashboard
+      navigate('/admin/dashboard'); // Navigate to your AdminDashboard route
+
+      // Clear form fields
+      setEmail('');
+      setPassword('');
+
+    } catch (err) {
+      // On login failure
+      console.error('Login error:', err);
+      toast.error(err?.response?.data?.message || '❌ Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
   return (
-    <div>
-      <div>
-        <div className="flex h-screen items-center justify-center bg-gray-100">
-          <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-5 text-center">Login</h2>
-            <form onSubmit={handleRegister}>
-              {/* email */}
-              <div className="mb-4">
-                <label className="block mb-2 font-semibold" htmlFor="">
-                  Email
-                </label>
-                <input
-                  className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  type="text"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Type Email"
-                />
-              </div>
-              {/* password */}
-              <div className="mb-4">
-                <label className="block mb-2 font-semibold" htmlFor="">
-                  Password
-                </label>
-                <input
-                  className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Type Username"
-                />
-              </div>
+    <>
+      {/* Inject styles into the head of the document */}
+      <style>{styles}</style>
 
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white hover:bg-blue-900 duration-300 rounded-xl font-semibold p-3"
-              >
-                Login
-              </button>
-              <p className="mt-4 text-center text-gray-600">
-                New user?{" "}
-                <Link to="/signup" className="text-blue-600 hover:underline">
-                  Signup
-                </Link>{" "}
-              </p>
-            </form>
-          </div>
+      <div className="flex items-center justify-center min-h-screen animated-background">
+        <div className="card-enter-animation bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 transform transition-all duration-500 ease-in-out">
+          <h2 className="text-4xl font-extrabold text-center text-gray-800 mb-8">Admin Login</h2>
+
+          <form onSubmit={handleSubmit}>
+            <div className="mb-6">
+              <label htmlFor="email" className="block text-gray-700 text-sm font-semibold mb-2">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus-animation transition-all duration-200"
+                required
+              />
+            </div>
+
+            <div className="mb-8">
+              <label htmlFor="password" className="block text-gray-700 text-sm font-semibold mb-2">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none input-focus-animation transition-all duration-200"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading} // Disable button while loading
+              className={`w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:ring-4 focus:ring-blue-300 button-hover-animation shadow-lg ${
+                loading ? 'opacity-70 cursor-not-allowed' : 'hover:from-blue-700 hover:to-indigo-800'
+              }`}
+            >
+              {loading ? 'Logging In...' : 'Login'}
+            </button>
+
+            <p className="text-center text-gray-600 text-sm mt-6">
+              Don't have an account?
+              {/* You might want to link this to your AdminRegister component or route */}
+              <a href="/admin/register" className="text-blue-600 hover:underline font-semibold">Sign Up</a>
+            </p>
+          </form>
         </div>
       </div>
-    </div>
+    </>
   );
 }
-
-export default Login;
-
-
-
-// login role
-// import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
-
-// const Login = () => {
-//   const navigate = useNavigate();
-
-//   const handleLogin = async (e) => {
-//     e.preventDefault();
-
-//     try {
-//       const res = await axios.post("http://localhost:5000/api/user/login", {
-//         email: "admin@example.com",
-//         password: "123456"
-//       });
-
-//       const { token, role } = res.data;
-
-//       // Save token and role in localStorage (or context)
-//       localStorage.setItem("token", token);
-//       localStorage.setItem("role", role);
-
-//       // ✅ Redirect based on role
-//       switch (role) {
-//         case "Admin":
-//           navigate("/admin/dashboard");
-//           break;
-//         case "Receptionist":
-//           navigate("/receptionist/dashboard");
-//           break;
-//         case "Staff":
-//           navigate("/staff/dashboard");
-//           break;
-//         case "Beneficiary":
-//           navigate("/beneficiary/dashboard");
-//           break;
-//         default:
-//           navigate("/");
-//       }
-//     } catch (err) {
-//       alert(err.response?.data?.message || "Login failed");
-//     }
-//   };
-
-//   return (
-//     <form onSubmit={handleLogin}>
-//       {/* Login Form Inputs */}
-//       <button type="submit">Login</button>
-//     </form>
-//   );
-// };
-
-// export default Login;
